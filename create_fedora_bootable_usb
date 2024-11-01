@@ -1,0 +1,77 @@
+#!/bin/bash
+
+set -e
+
+# Check if the Fedora version and device are provided as arguments
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Usage: $0 <FEDORA_VERSION> <USB_DEVICE>"
+    exit 1
+fi
+
+# Set variables
+BASE_URL="https://download.fedoraproject.org"
+ENDPOINT="/pub/fedora/linux/releases/"
+FEDORA_VERSION=$1
+USB_DEVICE=$2
+IS_x86_64=${3:-x86_64}
+
+echo "Starting Fedora $FEDORA_VERSION download and verification..."
+
+# Note: Use curl -L to follow redirects to nearby mirrors
+# # Step 1: Download Fedora ISO
+curl -L -O "${BASE_URL}${ENDPOINT}${FEDORA_VERSION}/Workstation/${IS_x86_64}/iso/Fedora-Workstation-Live-${IS_x86_64}-${FEDORA_VERSION}-1.4.iso"
+
+# Step 2: Download checksum file
+curl -L -O "${BASE_URL}${ENDPOINT}${FEDORA_VERSION}/Workstation/${IS_x86_64}/iso/Fedora-Workstation-${FEDORA_VERSION}-1.4-${IS_x86_64}-CHECKSUM"
+
+# Step 3: Download the GPG key
+curl -O https://fedoraproject.org/fedora.gpg
+
+# Ensure files are fully downloaded
+if [[ ! -f "Fedora-Workstation-Live-x86_64-${FEDORA_VERSION}-1.4.iso" ]] ||
+   [[ ! -f "Fedora-Workstation-${FEDORA_VERSION}-1.4-x86_64-CHECKSUM" ]] ||
+   [[ ! -f "fedora.gpg" ]]; then
+    echo "Error: One or more files failed to download."
+    exit 1
+fi
+
+# Step 4: Verify checksum is valid with the GPG key
+echo "Verifying GPG signature on checksum file..."
+if sudo gpgv --keyring ./fedora.gpg Fedora-Workstation-${FEDORA_VERSION}-1.4-${IS_x86_64}-CHECKSUM; then
+    echo "GPG verification passed."
+else
+    echo "GPG verification failed."
+    exit 1
+fi
+
+# Verify SHA-256 checksum
+echo "Verifying SHA-256 checksum on the downloaded ISO..."
+if sha256sum -c Fedora-Workstation-${FEDORA_VERSION}-1.4-${IS_x86_64}-CHECKSUM; then
+    echo "SHA-256 checksum verification passed."
+else
+    echo "SHA-256 checksum verification failed."
+    exit 1
+fi
+
+# Prompt user to continue with USB writing
+read -p "Both verifications passed. Do you wish to continue with writing to ${USB_DEVICE}? (yes/no): " response
+if [[ "$response" == "yes" ]]; then
+    # Step 5: Write ISO to USB device
+    echo "Writing Fedora ISO to ${USB_DEVICE}..."
+    # sudo gdd if=/Users/aaronfeingold/linux_images/Fedora-Workstation-Live-x86_64-41-1.4.iso of=/dev/disk2 bs=8388608 status=progress
+    echo "Writing complete."
+
+        # Step 6: Cleanup - remove downloaded files
+    echo "Cleaning up downloaded files..."
+    rm -f "Fedora-Workstation-Live-x86_64-${FEDORA_VERSION}-1.4.iso"
+    rm -f "Fedora-Workstation-${FEDORA_VERSION}-1.4-x86_64-CHECKSUM"
+    rm -f "fedora.gpg"
+
+    # Step 7: Eject the disk
+    echo "Ejecting ${DEVICE}..."
+    # diskutil eject ${DEVICE}
+    echo "Disk ${DEVICE} ejected. Process complete."
+else
+    echo "Aborted by user. Exiting without writing to ${USB_DEVICE}."
+    exit 0
+fi
