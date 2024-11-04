@@ -58,7 +58,7 @@ read -p "Both verifications passed. Do you wish to continue with writing to ${US
 if [[ "$response" == "yes" ]]; then
     # Step 5: Write ISO to USB device
     echo "Writing Fedora ISO to ${USB_DEVICE}..."
-    # sudo gdd if=/Users/aaronfeingold/linux_images/Fedora-Workstation-Live-x86_64-41-1.4.iso of=/dev/disk2 bs=8388608 status=progress
+    sudo gdd if=/Users/aaronfeingold/linux_images/Fedora-Workstation-Live-x86_64-41-1.4.iso of=/dev/disk2 bs=8388608 status=progress
     echo "Writing complete."
 
         # Step 6: Cleanup - remove downloaded files
