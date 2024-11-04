@@ -13,7 +13,8 @@ This script automates the process of downloading a specific version of Fedora, v
 
 Run the script with the following command:
 ```bash
-./<script_name>.sh <FEDORA_VERSION> <USB_DEVICE> [ARCHITECTURE]
+chmod +x create_fedora_bootable_usb
+./create_fedora_bootable_usb <FEDORA_VERSION> <USB_DEVICE> [ARCHITECTURE]
 ```
 
 - `<FEDORA_VERSION>`: The version of Fedora to download (e.g., `41`).
