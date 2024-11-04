@@ -1,6 +1,7 @@
 
 # Fedora ISO Download, Verification, and USB Writing Script
 
+## MacOS
 This script automates the process of downloading a specific version of Fedora, verifying its checksum and GPG signature, and then writing the ISO file to a specified USB device. The script includes checks to ensure all files are fully downloaded and verified before prompting the user to proceed with writing to a USB drive.
 
 ## Prerequisites
