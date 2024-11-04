@@ -24,7 +24,7 @@ chmod +x create_fedora_bootable_usb
 ### Example
 
 ```bash
-./fedora_iso_script.sh 41 /dev/sdX x86_64
+./create_fedora_bootable_usb 1 /dev/sdc x86_64
 ```
 
 This will download Fedora version 41 for `x86_64`, verify the download, and prompt you to write it to `/dev/sdX`.
@@ -49,7 +49,3 @@ This will download Fedora version 41 for `x86_64`, verify the download, and prom
 
 - `0`: Completed successfully or exited by the user.
 - `1`: An error occurred during download, verification, or writing.
-
-## License
-
-MIT License
